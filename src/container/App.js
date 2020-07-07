@@ -41,10 +41,10 @@ class App extends React.Component {
 	}
 	componentDidMount(){
 		// fetch is a method of window object, it allows us to make requests to server.
-		fetch('http://jsonplaceholder.typicode.com/users') // go to this url and get data
+		fetch('https://jsonplaceholder.typicode.com/users') // go to this url and get data
 			.then(response => {	return response.json();})
 			.then(users => {this.setState({robots: users})})  //update state
-	}
+		}
 	render(){      // also, a render in class is needed.
 		const {robots, searchfield} = this.state; // for short writing, not repeating this.state
 		const filteredRobots = robots.filter((robot) => {
