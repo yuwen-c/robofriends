@@ -1,57 +1,54 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import CardList from '../component/CardList.js';
 //import {robots} from '../component/robots.js';
 import SearchBox from '../component/SearchBox';
 import './App.css';
 import Scroll from '../component/Scroll.js';
 import ErrorBoundary from '../component/ErrorBoundary.js';
-import { setSearchField } from '../actions';
 
-// since in index.js, we createStore from reducer-searchRobots,
-// now we pass this state as props (a prop object) to App.
-// this state comes from the return of reducer
-const mapStateToProps = (state) =>{
-	return {
-		searchField: state.searchField
-	}
-}
+// to communicate the two components, searchBox and robots, we need 'state'
+// const state = {
+// 	robots:'robots', //robots array
+// 	searchfield:'' // inputbox
+// }
 
-// dispatch is used for sending actions to reducer.
-// we're going to use this dispatch to let the input change can be passed
-// it'll be passes as a props
-// here the prop onSearchChange is a prop name, and it's also a function.
-const mapDispatchToProps = (dispatch) => {
-	return{
-		onSearchChange: (event) => dispatch(setSearchField(event.target.value))
-	}
-}
+// const App = () => {
+// 	return(
+// 		<React.Fragment>
+// 			<div className="tc">
+// 				<h1>RobotFriends</h1>
+// 				<SearchBox/>	
+// 				<CardList robots={robots}/>
+// 			</div>
+// 		</React.Fragment>
+// 		)
+// }
 
 // to use state syntax, a class is required.
 class App extends React.Component {
 	constructor(){
 		super()    // before this, super() is called.
 		this.state = {
-			robots: [] // in real world, we get data from server instead of importing a file
-			// searchfield:''
+			robots: [], // in real world, we get data from server instead of importing a file
+			searchfield:''
 		}
 	}
-
-	// onSearchChange = (event) => {
-	// 	this.setState({ searchfield: event.target.value});
-	// }
-
-	componentDidMount(){ 
+	// this function has a random name. App listens to the changes.
+	onSearchChange = (event) => {
+		this.setState({ searchfield: event.target.value});
+			// update searchfield everytime, otherwise it's "" forever. 
+		//console.log(filteredRobots); //listen to changes in searchbox
+	}
+	componentDidMount(){
 		// fetch is a method of window object, it allows us to make requests to server.
 		fetch('https://jsonplaceholder.typicode.com/users') // go to this url and get data
 			.then(response => {	return response.json();})
 			.then(users => {this.setState({robots: users})})  //update state
 		}
-	render(){      
-		const {robots} = this.state; // for short writing, not repeating this.state
-		const { searchField, onSearchChange } = this.props;
+	render(){      // also, a render in class is needed.
+		const {robots, searchfield} = this.state; // for short writing, not repeating this.state
 		const filteredRobots = robots.filter((robot) => {
-			return robot.name.toLowerCase().includes(searchField.toLowerCase())
+			return robot.name.toLowerCase().includes(searchfield.toLowerCase())
 		}) 
 		// if data is so huge, we can use a if statement, then the original empty [] shows loading.
 		// after this.setState, robots will show.
@@ -62,7 +59,7 @@ class App extends React.Component {
 		return(	
 			<div className="tc">
 				<h1 className='f1'>RoboFriends</h1>
-				<SearchBox searchChange={onSearchChange}/>	
+				<SearchBox searchChange={this.onSearchChange}/>	
 				{/*  anytime when the searchbox changes, it triggers the searchChange function.
 				 */}
 				<Scroll>
@@ -76,7 +73,4 @@ class App extends React.Component {
 	}
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(App);
-
-// use connect function to let App know: 
-// which state change it's going to watch, which action it's interesting with
+export default App;
